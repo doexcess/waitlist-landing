@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import React from 'react';
-import Icon from './ui/icons/Icon';
 import { WaitlistForm } from './WaitlistForm';
 
 const Hero = () => {
