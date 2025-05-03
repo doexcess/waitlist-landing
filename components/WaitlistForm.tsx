@@ -27,7 +27,7 @@ export function WaitlistForm() {
     setMessage('');
 
     try {
-      const response: any = await axios.post('/api/subscribe', { email, name });
+      const response = await axios.post('/api/subscribe', { email, name });
 
       if (response.status === 200) {
         let msg = response.data.message;

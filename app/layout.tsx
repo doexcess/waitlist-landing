@@ -2,14 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 
-// export const metadata: Metadata = {
-//   title: 'Doexcess',
-//   description: 'Streamline and automate essential business processes.',
-//   icons: {
-//     icon: 'icons/icon.png',
-//   },
-// };
-
 export const metadata: Metadata = {
   title: {
     default: 'Doexcess | All-in-One Member Onboarding & Digital Management',
@@ -22,24 +14,30 @@ export const metadata: Metadata = {
     title: 'Doexcess: Simplify Member Management',
     description:
       'End-to-end solutions for onboarding, email automation, and digital offering management',
-    url: 'https://doexcess.com',
-    siteName: 'Your Site Name',
     images: [
       {
-        url: '/images/preview-image.jpg', // Path to your image
+        url: '/images/card.png',
         width: 1200,
         height: 630,
+        alt: 'Doexcess platform managing members and digital content',
       },
     ],
-    locale: 'en_US',
-    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Your Website Name',
-    description: 'Your awesome website description',
-    images: ['/images/preview-image.jpg'],
+    title: 'Doexcess | Digital Member Management Platform',
+    description:
+      'Onboarding + email automation + course/event management in one system',
+    images: '/images/card.png',
   },
+
+  keywords: [
+    'member onboarding platform',
+    'email automation tools',
+    'online course management',
+    'event ticket system',
+    'SaaS for organizations',
+  ],
 };
 
 export default function RootLayout({
