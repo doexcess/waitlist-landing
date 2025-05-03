@@ -18,10 +18,7 @@ export function WaitlistForm() {
     <Dialog>
       <DialogTrigger asChild>
         {/* <Button variant='outline'>Edit Profile</Button> */}
-        <Button
-          variant={'link'}
-          className='mt-6 inline-flex items-center gap-2 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-full px-6 py-6 text-[#4045e1] dark:text-white hover:bg-blue-50 dark:hover:bg-gray-700 transition'
-        >
+        <Button className='mt-6 inline-flex items-center gap-2 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-full px-6 py-6 text-[#4045e1] dark:text-white hover:bg-blue-50 dark:hover:bg-gray-700 transition cursor-pointer'>
           <div className='flex -space-x-2'>
             <Image
               src='/icons/chat/avatars/image4.png'
@@ -58,17 +55,6 @@ export function WaitlistForm() {
           </DialogDescription>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label htmlFor='name' className='text-right'>
-              Name
-            </Label>
-            <Input
-              id='name'
-              value='Pedro Duarte'
-              className='col-span-3'
-              onChange={() => {}}
-            />
-          </div>
           <div className='grid grid-cols-4 items-center gap-4'>
             <Label htmlFor='email' className='text-right'>
               Email
