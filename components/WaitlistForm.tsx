@@ -36,7 +36,7 @@ export function WaitlistForm() {
       } else {
         setMessage('Subscription failed. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setMessage('An error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);

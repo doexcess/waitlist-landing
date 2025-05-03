@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import Icon from './ui/icons/Icon';
 
 const EmailSubmissionForm = () => {
@@ -7,7 +6,7 @@ const EmailSubmissionForm = () => {
     <div className='max-w-md mx-auto py-10 text-center rounded-lg space-y-10 px-2 md:px-0'>
       <form className='space-y-4'>
         {/* Email Input */}
-        <div className='flex'>
+        <div className='hidden'>
           <input
             type='email'
             id='email'
@@ -27,7 +26,7 @@ const EmailSubmissionForm = () => {
 
         {/* Footer Text */}
         <p className='text-xs mt-4'>
-          Want to reach us? Drop your email or contact us on{' '}
+          Want to reach us? Contact us on{' '}
           <a
             href='mailto:hello@doexcess.com'
             className='text-[#4045e1] dark:text-white hover:underline'
@@ -59,6 +58,10 @@ const EmailSubmissionForm = () => {
           />
         </a>
       </div>
+      <p className='text-xs mt-4'>
+        Copyright &copy; Doexcess {new Date().getFullYear()} | All Rights
+        Reserved
+      </p>
     </div>
   );
 };
