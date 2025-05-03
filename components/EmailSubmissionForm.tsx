@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Icon from './ui/icons/Icon';
 
 const EmailSubmissionForm = () => {
-  const [email, setEmail] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log('Submitted email:', email);
-  };
-
   return (
     <div className='max-w-md mx-auto py-10 text-center rounded-lg space-y-10 px-2 md:px-0'>
-      <form onSubmit={handleSubmit} className='space-y-4'>
+      <form className='space-y-4'>
         {/* Email Input */}
         <div className='flex'>
           <input
             type='email'
             id='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={''}
             className='flex-1 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#9a9df0]'
             placeholder='Enter your email'
             required

@@ -15,6 +15,8 @@ const getAccessToken = async () => {
     grant_type: 'refresh_token',
   });
 
+  console.log(params);
+
   const res = await fetch(
     `https://accounts.zoho.com/oauth/v2/token?${params.toString()}`,
     {
@@ -29,21 +31,26 @@ const getAccessToken = async () => {
     throw new Error(data.error || 'Failed to refresh access token');
   }
 
+  console.log(data);
   return data.access_token;
 };
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
+    const { email, name } = await req.json();
 
-    if (!email || !email.includes('@')) {
-      return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
+    // Validate email
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: 'Please provide a valid email address' },
+        { status: 400 }
+      );
     }
 
     const accessToken = await getAccessToken();
 
     const response = await fetch(
-      'https://campaigns.zoho.com/api/v1.1/json/listsubscribe',
+      'https://campaigns.zoho.com/api/v1.1/json/listsubscribe?resfmt=JSON',
       {
         method: 'POST',
         headers: {
@@ -52,14 +59,18 @@ export async function POST(req: Request) {
         },
         body: new URLSearchParams({
           listkey: ZOHO_LIST_KEY!,
-          contactinfo: JSON.stringify([{ email }]),
+          contactinfo: JSON.stringify({
+            'Contact Email': email,
+            'First Name': name, // Optional but recommended
+            'Last Name': 'Subscriber', // Optional but recommended
+          }),
         }),
       }
     );
 
     const data = await response.json();
 
-    if (data.code !== 0) {
+    if (data.code !== '0') {
       console.error('Zoho API error:', data);
       return NextResponse.json(
         { error: data.message || 'Zoho error' },

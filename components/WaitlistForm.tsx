@@ -12,8 +12,37 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Icon from './ui/icons/Icon';
 import Image from 'next/image';
+import { useState } from 'react';
+import axios from 'axios';
 
 export function WaitlistForm() {
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage('');
+
+    try {
+      const response = await axios.post('/api/subscribe', { email });
+
+      if (response.status === 200) {
+        setMessage('Thanks for joining the waitlist!');
+        setName('');
+        setEmail('');
+      } else {
+        setMessage('Subscription failed. Please try again.');
+      }
+    } catch (error) {
+      setMessage('An error occurred. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,28 +77,59 @@ export function WaitlistForm() {
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Add to waitlist</DialogTitle>
-          <DialogDescription>
-            Join the waitlist to be among the first to get access.
-          </DialogDescription>
-        </DialogHeader>
-        <div className='grid gap-4 py-4'>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label htmlFor='email' className='text-right'>
-              Email
-            </Label>
-            <Input
-              id='email'
-              value='@peduarte'
-              className='col-span-3'
-              onChange={() => {}}
-            />
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <DialogHeader>
+            <DialogTitle>Add to waitlist</DialogTitle>
+            <DialogDescription>
+              Join the waitlist to be among the first to get access.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='name' className='text-right'>
+                Name
+              </Label>
+              <Input
+                type='name'
+                id='name'
+                value={name}
+                className='col-span-3'
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='email' className='text-right'>
+                Email
+              </Label>
+              <Input
+                type='email'
+                id='email'
+                value={email}
+                className='col-span-3'
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isSubmitting}
+              />
+            </div>
           </div>
-        </div>
-        <DialogFooter>
-          <Button type='submit'>Join</Button>
-        </DialogFooter>
+          {message && (
+            <p
+              className={`text-sm ${
+                message.includes('Thanks') ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              {message}
+            </p>
+          )}
+
+          <DialogFooter>
+            <Button type='submit' className='cursor-pointer'>
+              {isSubmitting ? 'Submitting...' : 'Join'}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
