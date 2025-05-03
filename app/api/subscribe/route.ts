@@ -64,6 +64,10 @@ export async function POST(req: Request) {
             'First Name': name, // Optional but recommended
             'Last Name': 'Subscriber', // Optional but recommended
           }),
+          doubleoptin: 'true', // Require confirmation
+          signupsource: 'Website Waitlist', // Track origin
+          resendconfirmation: 'true', // Resend if needed
+          consent: 'explicit', // GDPR compliance
         }),
       }
     );

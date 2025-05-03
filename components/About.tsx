@@ -26,9 +26,9 @@ const About = () => {
           <p className='text-gray-600 dark:text-gray-300 mb-8 max-w-xl leading-relaxed'>
             Doexcess is an all-in-one SaaS platform designed to help businesses,
             communities, and organizations onboard new members, automate
-            communications via WhatsApp and email, and manage digital offerings
-            like online courses and event tickets—all from a single,
-            user-friendly interface.
+            communications via email and manage digital offerings like online
+            courses and event tickets—all from a single, user-friendly
+            interface.
           </p>
 
           {/* Features Grid */}
@@ -45,7 +45,7 @@ const About = () => {
               <h3 className='text-gray-900 dark:text-white mb-1'>
                 Automated Messaging
               </h3>
-              <p>Schedule and send templated WhatsApp and email campaigns.</p>
+              <p>Schedule and send templated email campaigns.</p>
             </div>
             <div className='flex flex-col justify-center items-center text-center gap-2'>
               <Icon url='/images/product.png' width={30} />

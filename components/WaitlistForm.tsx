@@ -27,10 +27,12 @@ export function WaitlistForm() {
     setMessage('');
 
     try {
-      const response = await axios.post('/api/subscribe', { email });
+      const response = await axios.post('/api/subscribe', { email, name });
 
       if (response.status === 200) {
-        setMessage('Thanks for joining the waitlist!');
+        setMessage(
+          'Thanks for joining the waitlist! Pls check your mailbox to confirm the subscription.'
+        );
         setName('');
         setEmail('');
       } else {
