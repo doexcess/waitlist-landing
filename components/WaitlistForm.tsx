@@ -32,22 +32,14 @@ export function WaitlistForm() {
       if (response.status === 200) {
         let msg = response.data.message;
 
-        if (
-          msg !==
-          'This email address already exists in the list. However, any additional information will be updated in the existing contact.'
-        ) {
-          msg =
-            'Thanks for joining the waitlist! Pls check your mailbox to confirm the subscription.';
-        }
-
         setMessage(msg);
         setName('');
         setEmail('');
       } else {
         setMessage('Subscription failed. Please try again.');
       }
-    } catch {
-      setMessage('An error occurred. Please try again later.');
+    } catch (error: any) {
+      setMessage(error.response.data.error);
     } finally {
       setIsSubmitting(false);
     }

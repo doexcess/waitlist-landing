@@ -1,37 +1,5 @@
 import { NextResponse } from 'next/server';
 
-const {
-  ZOHO_CLIENT_ID,
-  ZOHO_CLIENT_SECRET,
-  ZOHO_REFRESH_TOKEN,
-  ZOHO_LIST_KEY,
-} = process.env;
-
-const getAccessToken = async () => {
-  const params = new URLSearchParams({
-    refresh_token: ZOHO_REFRESH_TOKEN!,
-    client_id: ZOHO_CLIENT_ID!,
-    client_secret: ZOHO_CLIENT_SECRET!,
-    grant_type: 'refresh_token',
-  });
-
-  const res = await fetch(
-    `https://accounts.zoho.com/oauth/v2/token?${params.toString()}`,
-    {
-      method: 'POST',
-    }
-  );
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    console.error('Error refreshing Zoho token:', data);
-    throw new Error(data.error || 'Failed to refresh access token');
-  }
-
-  return data.access_token;
-};
-
 export async function POST(req: Request) {
   try {
     const { email, name } = await req.json();
@@ -44,46 +12,52 @@ export async function POST(req: Request) {
       );
     }
 
-    const accessToken = await getAccessToken();
-
-    const response = await fetch(
-      'https://campaigns.zoho.com/api/v1.1/json/listsubscribe?resfmt=JSON',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Zoho-oauthtoken ${accessToken}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
+    // Brevo API call
+    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY!,
+      },
+      body: JSON.stringify({
+        email: email,
+        attributes: {
+          FIRSTNAME: name || 'Waitlist',
+          SIGNUP_SOURCE: 'Website Waitlist',
+          SIGNUP_IP: req.headers.get('x-forwarded-for') || '',
+          SIGNUP_DATE: new Date().toISOString(),
         },
-        body: new URLSearchParams({
-          listkey: ZOHO_LIST_KEY!,
-          contactinfo: JSON.stringify({
-            'Contact Email': email,
-            'First Name': name, // Optional but recommended
-            'Last Name': 'Subscriber', // Optional but recommended
-          }),
-          doubleoptin: 'true', // Require confirmation
-          signupsource: 'Website Waitlist', // Track origin
-          resendconfirmation: 'true', // Resend if needed
-          consent: 'explicit', // GDPR compliance
-        }),
-      }
-    );
+        listIds: [3], // Replace with your Brevo list ID
+        updateEnabled: true,
+        emailBlacklisted: false,
+        smtpBlacklistSender: ['hello@doexcess.com'], // Prevent accidental spam
+      }),
+    });
 
-    const data = await response.json();
+    if (brevoResponse.status === 204) {
+      throw new Error('This email address already exists in the list.');
+    }
 
-    console.log(data);
+    const data = await brevoResponse.json();
 
-    if (data.code !== '0') {
-      console.error('Zoho API error:', data);
+    if (!brevoResponse.ok) {
+      console.error('Brevo API error:', data);
       return NextResponse.json(
-        { error: data.message || 'Zoho error' },
-        { status: 400 }
+        { error: data.message || 'Failed to subscribe' },
+        { status: brevoResponse.status }
       );
     }
 
-    return NextResponse.json({ message: data.message });
-  } catch (error) {
+    return NextResponse.json({
+      message: 'Thanks for joining the waitlist!',
+      data,
+    });
+  } catch (error: any) {
     console.error('Server error:', error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
