@@ -15,8 +15,6 @@ const getAccessToken = async () => {
     grant_type: 'refresh_token',
   });
 
-  console.log(params);
-
   const res = await fetch(
     `https://accounts.zoho.com/oauth/v2/token?${params.toString()}`,
     {
@@ -31,7 +29,6 @@ const getAccessToken = async () => {
     throw new Error(data.error || 'Failed to refresh access token');
   }
 
-  console.log(data);
   return data.access_token;
 };
 
@@ -74,6 +71,8 @@ export async function POST(req: Request) {
 
     const data = await response.json();
 
+    console.log(data);
+
     if (data.code !== '0') {
       console.error('Zoho API error:', data);
       return NextResponse.json(
@@ -82,7 +81,7 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ message: 'Successfully added to waitlist' });
+    return NextResponse.json({ message: data.message });
   } catch (error) {
     console.error('Server error:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
