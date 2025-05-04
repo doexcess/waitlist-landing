@@ -16,32 +16,57 @@ const Hero = () => {
       <WaitlistForm />
 
       <div className='relative flex justify-center items-end w-full max-w-6xl flex-1 mt-12'>
-        {/* background image 1 - raised slightly */}
-        <Image
-          src='/images/analytics.png'
-          alt='chart'
-          width={380}
-          height={180}
-          className='absolute -left-4 top-0 md:rotate-[8deg] rounded-lg dark:invert'
-        />
+        {/* Background image containers with aspect ratio preservation */}
+        <div className='absolute -left-4 top-0 w-[380px] h-[180px]'>
+          <Image
+            src='/images/analytics.png'
+            alt='Analytics dashboard preview'
+            width={380}
+            height={180}
+            loading='lazy'
+            className='md:rotate-[8deg] rounded-lg dark:invert'
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+              backgroundColor: 'transparent',
+            }}
+            placeholder='empty'
+          />
+        </div>
 
-        {/* background image 2 - raised slightly */}
-        <Image
-          src='/images/chat.png'
-          alt='chat'
-          width={380}
-          height={180}
-          className='absolute -right-4 top-0 md:-rotate-[6deg] rounded-lg dark:invert'
-        />
+        <div className='absolute -right-4 top-0 w-[380px] h-[180px]'>
+          <Image
+            src='/images/chat.png'
+            alt='Chat interface preview'
+            width={380}
+            height={180}
+            loading='lazy'
+            className='md:-rotate-[6deg] rounded-lg dark:invert'
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'center',
+              backgroundColor: 'transparent',
+            }}
+            placeholder='empty'
+          />
+        </div>
 
-        {/* hero image - flush to bottom */}
-        <Image
-          src='/images/hero.png'
-          alt='hero'
-          width={240}
-          height={320}
-          className='z-10 rounded-xl object-bottom'
-        />
+        {/* Hero image container with fixed dimensions */}
+        <div className='z-10 w-[240px] h-[320px] relative'>
+          <Image
+            src='/images/hero.png'
+            alt='Doexcess platform preview'
+            width={240}
+            height={320}
+            loading='lazy'
+            className='rounded-xl object-cover object-bottom'
+            style={{
+              backgroundColor: 'transparent',
+            }}
+            placeholder='empty'
+            sizes='(max-width: 768px) 100vw, 50vw'
+          />
+        </div>
       </div>
     </main>
   );
