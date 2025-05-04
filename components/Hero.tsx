@@ -52,7 +52,7 @@ const Hero = () => {
         </div>
 
         {/* Hero image container with fixed dimensions */}
-        <div className='z-10 w-[180px] sm:w-[240px] sm:h-[320px] relative '>
+        <div className='z-10 w-[200px] sm:w-[240px] sm:h-[320px] relative '>
           <Image
             src='/images/hero.png'
             alt='Doexcess platform preview'
