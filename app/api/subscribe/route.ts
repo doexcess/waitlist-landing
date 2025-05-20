@@ -1,3 +1,4 @@
+import { htmlContent } from '@/lib/utils';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -12,49 +13,114 @@ export async function POST(req: Request) {
       );
     }
 
-    // Brevo API call
-    const brevoResponse = await fetch('https://api.brevo.com/v3/contacts', {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        'api-key': process.env.BREVO_API_KEY!,
-      },
-      body: JSON.stringify({
-        email: email,
-        attributes: {
-          FIRSTNAME: name || 'Waitlist',
-          SIGNUP_SOURCE: 'Website Waitlist',
-          SIGNUP_IP: req.headers.get('x-forwarded-for') || '',
-          SIGNUP_DATE: new Date().toISOString(),
+    // First check if contact already exists
+    const checkContactResponse = await fetch(
+      `https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`,
+      {
+        method: 'GET',
+        headers: {
+          'api-key': process.env.BREVO_API_KEY!,
         },
-        listIds: [3], // Replace with your Brevo list ID
-        updateEnabled: true,
-        emailBlacklisted: false,
-        smtpBlacklistSender: ['hello@doexcess.com'], // Prevent accidental spam
-      }),
-    });
+      }
+    );
 
-    if (brevoResponse.status === 204) {
-      throw new Error('This email address already exists in the list.');
+    // If contact exists (status 200), return without sending email
+    if (checkContactResponse.status === 200) {
+      const contactData = await checkContactResponse.json();
+      if (contactData.listIds?.includes(3)) {
+        // Your list ID
+        return NextResponse.json(
+          { message: 'You are already on our waitlist!' },
+          { status: 200 }
+        );
+      }
     }
 
-    const data = await brevoResponse.json();
+    // Create/update contact
+    const brevoContactResponse = await fetch(
+      'https://api.brevo.com/v3/contacts',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'api-key': process.env.BREVO_API_KEY!,
+        },
+        body: JSON.stringify({
+          email,
+          attributes: {
+            FIRSTNAME: name || 'Waitlist',
+            SIGNUP_SOURCE: 'Website Waitlist',
+            SIGNUP_IP: req.headers.get('x-forwarded-for') || '',
+            SIGNUP_DATE: new Date().toISOString(),
+          },
+          listIds: [3], // your Brevo list ID
+          updateEnabled: true,
+          emailBlacklisted: false,
+          smtpBlacklistSender: [],
+        }),
+      }
+    );
 
-    if (!brevoResponse.ok) {
-      console.error('Brevo API error:', data);
-      return NextResponse.json(
-        { error: data.message || 'Failed to subscribe' },
-        { status: brevoResponse.status }
+    // Handle existing contact update
+    if (brevoContactResponse.status === 204) {
+      await fetch(
+        `https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`,
+        {
+          method: 'PUT',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'api-key': process.env.BREVO_API_KEY!,
+          },
+          body: JSON.stringify({
+            emailBlacklisted: false,
+            listIds: [3], // Ensure they're added to your list
+          }),
+        }
       );
     }
 
+    // Only send email if this is a new signup (status 201)
+    if (brevoContactResponse.status === 201) {
+      const transactionalEmailResponse = await fetch(
+        'https://api.brevo.com/v3/smtp/email',
+        {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            'api-key': process.env.BREVO_API_KEY!,
+          },
+          body: JSON.stringify({
+            sender: {
+              name: 'Doexcess',
+              email: 'info@doexcess.com',
+            },
+            to: [{ email, name: name || '' }],
+            subject: 'Welcome to the Waitlist 🎉',
+            htmlContent: htmlContent(name),
+            tags: ['waitlist-signup'],
+          }),
+        }
+      );
+
+      if (!transactionalEmailResponse.ok) {
+        const errorData = await transactionalEmailResponse.json();
+        console.error('Brevo email error:', errorData);
+        throw new Error('Failed to send confirmation email');
+      }
+
+      return NextResponse.json({
+        message: 'Thanks for joining! A confirmation email has been sent.',
+      });
+    }
+
     return NextResponse.json({
-      message: 'Thanks for joining the waitlist!',
-      data,
+      message: 'You have been added to our waitlist!',
     });
   } catch (error: any) {
-    console.error('Server error:', error);
+    console.error('Error:', error);
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }

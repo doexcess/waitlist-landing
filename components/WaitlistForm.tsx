@@ -127,7 +127,11 @@ export function WaitlistForm() {
           )}
 
           <DialogFooter>
-            <Button type='submit' className='cursor-pointer'>
+            <Button
+              type='submit'
+              className='cursor-pointer'
+              disabled={isSubmitting}
+            >
               {isSubmitting ? 'Submitting...' : 'Join'}
             </Button>
           </DialogFooter>
