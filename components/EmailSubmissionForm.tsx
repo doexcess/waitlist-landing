@@ -36,7 +36,7 @@ const EmailSubmissionForm = () => {
         </p>
       </form>
       <div className='flex gap-10 justify-center'>
-        <a href='https://linkedin.com/in/company/doexcess'>
+        <a href='https://linkedin.com/company/doexcesshq'>
           <Icon
             url='/images/linkedin.png'
             width={25}
